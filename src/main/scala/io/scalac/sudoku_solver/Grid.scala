@@ -1,27 +1,22 @@
 package io.scalac.sudoku_solver
 
-import org.chocosolver.solver.variables.IntVar
+case class Grid[A](values: Vector[Vector[A]]) {
 
-case class Grid(values: Vector[Vector[Int]]) {
+  def updated(x: Int, y: Int)(value: A) =
+    Grid(
+      values.updated(x, values(x).updated(y, value))
+    )
 
-  def updated(x: Int, y: Int)(value: Int) = Grid.updated(values, x, y)(value)
+  def getValue(x: Int, y: Int): A = values(x)(y)
 
-  def getValue(x: Int, y: Int): Int = values(x)(y)
+  def map[B](f: A => B): Grid[B] = Grid(values.map(_.map(f)))
 }
 
 object Grid {
-  type InnerGrid = Vector[Vector[Int]]
 
   val SIZE: Int = 9
 
-  def fill(values: InnerGrid) = Grid(values)
+  def fill[A](values: Vector[Vector[A]]) = Grid(values)
 
-  def fill(value: Int) = Grid(Vector.fill(SIZE, SIZE)(value))
-
-  def empty = fill(0)
-
-  def updated(grid: InnerGrid, x: Int, y: Int)(value: Int) =
-    Grid(
-      grid.updated(x, grid(x).updated(y, value))
-    )
+  def fill[A](value: A) = Grid(Vector.fill(SIZE, SIZE)(value))
 }
